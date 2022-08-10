@@ -1,0 +1,30 @@
+{
+  "private": "true",
+  "workspaces": [
+    "infrastructure/*",
+    "entrypoints/*",
+    "application/*",
+    "domain/*"
+  ],
+  "name": "user-service",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "start": "yarn workspaces run start:http",
+    "dev": "yarn lint && nodemon -e ts --watch './**/*' --ignore node_modules --exec 'yarn workspaces run start:http'",
+    "lint": "eslint . --ext .ts",
+    "lint--fix": "eslint . --ext .ts --fix"
+  },
+  "dependencies": {
+    "typescript": "^4.7.4",
+    "ts-node": "^10.9.1",
+    "tsconfig-paths": "4.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^18.6.4",
+    "@typescript-eslint/eslint-plugin": "^5.32.0",
+    "@typescript-eslint/parser": "^5.32.0",
+    "nodemon": "^2.0.19",
+    "eslint": "^8.21.0"
+  }
+}

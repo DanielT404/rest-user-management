@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "noImplicitAny": false,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "moduleResolution": "Node",
+    "baseUrl": ".",
+    "paths": {
+      "@application/*": ["./application/*"],
+      "@config/*": ["./config/*"],
+      "@domain/*": ["./domain/*"],
+      "@infrastructure/*": ["./infrastructure/*"],
+      "@entrypoints/*": ["./entrypoints/*"]
+    }
+  },
+  "include": ["./**/*.ts", "index.ts", "./**/index.ts"],
+  "exclude": ["node_modules", "node_modules/**"]
+}

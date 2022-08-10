@@ -1,0 +1,35 @@
+version: "3.9"
+services:
+  user-service:
+    image: user-service
+    working_dir: /user-service
+    container_name: user-service
+    build:
+      context: ./packages/user-service
+      dockerfile: development.Dockerfile
+    ports:
+      - 3000:3000
+    restart: unless-stopped
+    networks:
+      - microservices
+  mongodb:
+    image: mongo
+    container_name: database
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - 27017:27017
+    command:
+      - "--logpath"
+      - "/var/log/mongodb/mongod.log"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - microservices
+volumes:
+  mongodb_data:
+networks:
+  microservices:
+    driver: bridge
