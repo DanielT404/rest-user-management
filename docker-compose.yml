@@ -1,0 +1,138 @@
+version: "3.9"
+services:
+  user-service-api-gateway:
+    container_name: api-gateway
+    image: api-gateway
+    working_dir: /api-gateway
+    environment:
+      - LBUrl=http://haproxy:3002/
+    ports:
+      - "3000:3000"
+    build:
+      context: ./packages/user-service/infrastructure/api-gateway
+      dockerfile: development.Dockerfile
+    command: yarn start:api-gateway
+    restart: always
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - user-service-main
+    networks:
+      - user_service
+  user-service-1:
+    container_name: user-service-1
+    image: user-service
+    working_dir: /user-service
+    build:
+      context: ./packages/user-service
+      dockerfile: development.Dockerfile
+    environment:
+      - SERVICE_PORT=4237
+    restart: always
+    depends_on:
+      - mongodb
+      - redis
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - user_service
+  user-service-2:
+    container_name: user-service-2
+    image: user-service
+    working_dir: /user-service
+    build:
+      context: ./packages/user-service
+      dockerfile: development.Dockerfile
+    environment:
+      - SERVICE_PORT=4238
+    restart: always
+    depends_on:
+      - mongodb
+      - redis
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - user_service
+  user-service-3:
+    container_name: user-service-3
+    image: user-service
+    working_dir: /user-service
+    build:
+      context: ./packages/user-service
+      dockerfile: development.Dockerfile
+    environment:
+      - SERVICE_PORT=4239
+    restart: always
+    depends_on:
+      - mongodb
+      - redis
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - user_service
+  user-service-4:
+    container_name: user-service-4
+    image: user-service
+    working_dir: /user-service
+    build:
+      context: ./packages/user-service
+      dockerfile: development.Dockerfile
+    environment:
+      - SERVICE_PORT=4240
+    restart: always
+    depends_on:
+      - mongodb
+      - redis
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - user_service
+  redis:
+    image: redis/redis-stack:latest
+    working_dir: /
+    container_name: redis
+    restart: unless-stopped
+    ports:
+      - 8001:8001
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 1s
+      timeout: 5s
+      retries: 10
+    networks:
+      - user_service
+  haproxy:
+    container_name: haproxy
+    image: haproxytech/haproxy-alpine:2.4
+    ports:
+      - "8404:8404"
+    volumes:
+      - ./packages/user-service/infrastructure/load-balancer:/usr/local/etc/haproxy:ro
+    depends_on:
+      - api-gateway
+      - user-service-1
+      - user-service-2
+      - user-service-3
+      - user-service-4
+    networks:
+      - user_service
+  mongodb:
+    container_name: mongodb
+    image: mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    command:
+      - "--logpath"
+      - "/var/log/mongodb/mongod.log"
+    volumes:
+      - mongodb_data:/data/db
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - user_service
+volumes:
+  mongodb_data:
+networks:
+  user_service:
+    driver: bridge

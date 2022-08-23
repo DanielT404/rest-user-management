@@ -3,9 +3,8 @@
 ## How to run the application
 
 1. `git clone https://github.com/DanielT404/rest-user-management.git` to your own path of choice.
-2. Wanna test it out without having to install the dependencies locally? Just run `docker-compose -f development.no-hotreload.docker-compose.yml up --build -d`.
+2. Wanna test it out without having to install the dependencies locally? Just run `docker-compose up --build -d`.
 3. App is now ready to handle incoming requests on port 3000.
-4. Run some
 
 ## Database used
 
@@ -24,6 +23,8 @@ An user is stored in the database with the following fields:
 - permissions: Array<ResourceActionScope[]>
   - ResourceActionScope[] = { action: "self" | "all", method: "GET" | "POST" | "PUT" | "DELETE", resource: string = 'users' }
 - refresh_token: 64-byte string, hex encoded, unique, representing a temporary token for each user to authenticate again.
+- created_at: string<DateTime>, ISO-8601 string, representing the registration date of the user.
+- updated_at: string<DateTime>, ISO-8601 string, representing the last user-related modifications date.
 
 ## Authentication & Authorization
 
@@ -32,7 +33,8 @@ When the user is succesfully logged in, on each subsequent request there will be
 
 - 1.  an unique access_token - the JWT token of the user, sent as cookie, which expires every 1 minute.
 - 2.  an unique refresh_token - sent as cookie, used to refresh the access_token once it expires
-      Cookies are sent with the `SameSite=lax`, `HttpOnly` and `Strict=true` policies.
+
+Cookies are sent with the `SameSite=lax`, `HttpOnly` and `Strict=true` policies.
 
 ## API requests
 
