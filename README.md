@@ -21,7 +21,7 @@ An user is stored in the database with the following fields:
 - blacklisted: boolean[true | false], representing if a given user is blacklisted from using the services.
 - roles: Array<string> - accepted strings: "guest" or "admin"
 - permissions: Array<ResourceActionScope[]>
-  - ResourceActionScope[] = { action: "self" | "all", method: "GET" | "POST" | "PUT" | "DELETE", resource: string = 'users' }
+  - ResourceActionScope[] = { action: "self" | "all", method: "GET" | "POST" | "PATCH" | "DELETE", resource: string = 'users' }
 - refresh_token: 64-byte string, hex encoded, unique, representing a temporary token for each user to authenticate again.
 - created_at: string<DateTime>, ISO-8601 string, representing the registration date of the user.
 - updated_at: string<DateTime>, ISO-8601 string, representing the last user-related modifications date.
@@ -61,7 +61,7 @@ Current version: v1
    - permissions
    ### Optional headers:
    - X-Auth-Token || create a default admin user with the x-auth-token key generated on app initialization.
-5. PUT /users/:id - update an existing user field.
+5. PATCH /users/:id - update an existing user field.
    ### Optional fields:
    - username: to modify the username
    - password: to modify the password
