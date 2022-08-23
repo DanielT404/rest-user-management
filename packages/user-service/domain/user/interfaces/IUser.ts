@@ -9,5 +9,9 @@ export interface IUser {
     hash: string,
     salt: string,
     roles: Array<RoleEnum>,
-    permissions: ResourceActionScope[]
+    permissions: ResourceActionScope[],
+    refresh_token: string,
+    blacklisted: boolean,
+    created_at: string,
+    updated_at: string
 }

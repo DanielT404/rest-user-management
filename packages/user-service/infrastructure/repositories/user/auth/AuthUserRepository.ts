@@ -1,4 +1,5 @@
 import { IUserQuery } from "@domain/user/interfaces/IUserQuery";
+
 import { generateJWTToken, verifyJWTToken } from "@infrastructure/jwt";
 import { checkPassword } from "@infrastructure/passwords";
 import { IUserRepository, UserRepository } from "@infrastructure/repositories/user/UserRepository";
@@ -14,14 +15,15 @@ export class AuthUserRepository {
     async login(user: IUserQuery) {
         try {
             const userExists = await this.userRepository.exists(user);
-            if (!userExists) return false;
-            const dbUser = await this.userRepository.findOneByUsername({ username: user.username });
-            if (dbUser == null) return false;
+            if (!userExists) return Promise.reject("Invalid username or password.");
+            const dbUser = await this.userRepository.findOneBy({ username: user.username });
+            if (dbUser.blacklisted) return Promise.reject("User is blacklisted.");
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const validCredentials: any = await checkPassword(user.password, dbUser.hash, dbUser.salt);
-            if (!validCredentials) return false;
-            const jwtToken = await generateJWTToken(dbUser);
-            return jwtToken;
+            if (!validCredentials) return Promise.reject("Invalid username or password.")
+            const accessToken = await generateJWTToken(dbUser);
+            const refreshToken = dbUser.refresh_token;
+            return { access_token: accessToken, refresh_token: refreshToken };
         } catch (error) {
             return error;
         }

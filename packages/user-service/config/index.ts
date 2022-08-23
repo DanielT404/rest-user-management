@@ -1,33 +1,22 @@
 const config = {
-    users: {
-        mockNumber: 1000
-    },
     passwords: {
-        byteLength: 64,
+        byte_length: 64,
     },
     jwt: {
         pub_key_path: '/user-service/config/jwt/pub.key',
         private_key_path: '/user-service/config/jwt/pem.key',
-    },
-    https: {
-        private_key_path: '',
-        certificate_path: ''
+        refresh_token_byte_length: 64
     },
     docker: {
-        http: {
-            port: 3000,
-            xauth: null
-        },
         mongodb: {
             db_name: "test",
-            container_name: "database",
-            port: 27017,
+            container_name: "mongodb",
             auth: {
                 username: "root",
                 password: "example"
             },
             get connectionUri() {
-                return `mongodb://${this.auth.username}:${this.auth.password}@${this.container_name}:${this.port}`;
+                return `mongodb://${this.auth.username}:${this.auth.password}@${this.container_name}`;
             }
         }
     }
@@ -59,16 +48,4 @@ async function writeTmpKeyToLocalTxtFile(tmpKey: string) {
     })
 }
 
-function setTmpXAuthKey(config, key: string) {
-    return new Promise((resolve) => {
-        config.docker.http.xauth = key;
-        resolve(config);
-    })
-}
-
-function unsetTmpXAuthKey(config) {
-    config.docker.http.xauth = null;
-    return config;
-}
-
-export { config, generateTmpXAuthKey, clearLocalTxtTmpKey, writeTmpKeyToLocalTxtFile, setTmpXAuthKey, unsetTmpXAuthKey }
+export { config, generateTmpXAuthKey, clearLocalTxtTmpKey, writeTmpKeyToLocalTxtFile }

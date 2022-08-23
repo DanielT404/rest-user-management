@@ -10,8 +10,8 @@
   "version": "1.0.0",
   "license": "MIT",
   "scripts": {
-    "start": "yarn workspaces run start:http",
-    "dev": "yarn lint && nodemon -e ts --watch './**/*' --ignore node_modules --exec 'yarn workspaces run start:http'",
+    "start": "cd entrypoints/http && yarn run start:http",
+    "dev": "yarn lint && nodemon -e ts,js --watch './**/*' --ignore node_modules --exec 'cd entrypoints/http && yarn run start:http'",
     "lint": "eslint . --ext .ts",
     "lint--fix": "eslint . --ext .ts --fix"
   },

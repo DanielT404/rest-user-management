@@ -9,7 +9,13 @@ export class MongoDb {
         return this._connection;
     }
     public async openConnection() {
-        this._connection = await connectClient(new MongoClient(config.docker.mongodb.connectionUri));
+        this._connection = await connectClient(new MongoClient(config.docker.mongodb.connectionUri, {
+            socketTimeoutMS: 300000,
+            maxPoolSize: 20000,
+            loggerLevel: 'debug',
+            keepAlive: true,
+            connectTimeoutMS: 300000,
+        }));
         return this._connection;
     }
     public closeConnection() {

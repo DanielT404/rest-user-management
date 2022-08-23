@@ -7,5 +7,9 @@ export interface IUserQuery {
     hash?: string,
     salt?: string,
     roles?: Array<string>,
-    permissions?: ResourceActionScope[]
+    permissions?: ResourceActionScope[],
+    refresh_token?: string,
+    blacklisted?: boolean,
+    created_at?: string,
+    updated_at?: string
 }

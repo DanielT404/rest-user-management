@@ -1,6 +1,13 @@
 import { IUserError } from "@infrastructure/errors/IUserError";
 import { IUserQuery } from "./interfaces/IUserQuery";
 
+export interface IValidateUser {
+    error: {
+        field: string,
+        message: string
+    }
+}
+
 const validateUser = async (user: IUserQuery): Promise<IUserError> => {
     const error: IUserError = { field: '', message: '' };
     if (user.password.length < 8) {

@@ -1,41 +1,31 @@
-import { randomBytes } from 'crypto';
-import { IUser } from "@domain/user/interfaces/IUser";
+import { IUser, RoleEnum } from "@domain/user/interfaces/IUser";
 import { IUserQuery } from "@domain/user/interfaces/IUserQuery";
 import { UserScope } from "@infrastructure/jwt/UserScope";
 import { IUserRepository, UserRepository } from "@infrastructure/repositories/user/UserRepository";
 
-function between(min, max) {
-    return Math.floor(
-        Math.random() * (max - min) + min
-    )
-}
-
-export async function addMockUsersToDatabase(userCount: number): Promise<object> {
+export async function addMockUsersToDatabase(userCount: number, cb: CallableFunction): Promise<object> {
+    const util = await import('util');
+    const { randomBytes } = await import('crypto');
+    const fsRandomBytes = util.promisify(randomBytes);
+    const date = new Date().toISOString();
     const started = performance.now();
     const userRepository: IUserRepository = new UserRepository();
-    const availableRoles = ['guest', 'admin'];
     let successCounter = 0;
     let failureCounter = 0;
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     for (let i = 0; i < userCount; i++) {
-        const user: IUserQuery = { username: '', password: '', roles: [], permissions: [] };
+        const user: IUserQuery = { username: '', password: '', roles: [], permissions: [], blacklisted: false, created_at: date, updated_at: null };
         const userScope: UserScope = new UserScope(user as IUser);
-        const randomUsername = randomBytes(2);
-        user.username = randomUsername.toString('hex');
-        const randomRole = availableRoles[between(0, availableRoles.length)];
-        user.roles = [randomRole];
-        if (between(0, 5001) % 2 === 0) {
-            userScope.setAdminResourceActionScope(user as IUser);
-        } else {
-            userScope.setGuestResourceActionScope(user as IUser);
-        }
-        const randomPassword = randomBytes(4);
-        user.password = randomPassword.toString('hex');
+        user.username = await (await fsRandomBytes(2)).toString('hex');
+        user.password = await (await fsRandomBytes(4)).toString('hex');
+        user.refresh_token = await (await fsRandomBytes(5)).toString('hex');
+        user.roles = [RoleEnum.Guest];
+        userScope.setGuestResourceActionScope(user as IUser);
         await userRepository.create(user).then((data) => {
             data.acknowledged ? successCounter++ : failureCounter++;
         });
     }
     const finished = performance.now();
     const duration = (finished - started) / 1000;
-    return { successCounter, failureCounter, duration, userCount };
+    return cb({ successCounter, failureCounter, duration, userCount });
 }

@@ -10,4 +10,5 @@ RUN sh -c 'cd infrastructure && yarn install'
 WORKDIR /user-service/config/jwt
 RUN ssh-keygen -t rsa -b 4096 -m PEM -E SHA512 -f pem.key
 RUN openssl rsa -in pem.key -pubout -outform PEM -out pub.key
-CMD yarn dev
+WORKDIR /user-service
+CMD yarn run dev

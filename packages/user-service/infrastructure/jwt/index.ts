@@ -1,5 +1,5 @@
-import { readFile } from 'fs/promises';
 import jwt from 'jsonwebtoken';
+import { readFile } from 'fs/promises';
 import { config } from '@config/index';
 
 export async function verifyJWTToken(token: string) {
@@ -16,10 +16,20 @@ export async function verifyJWTToken(token: string) {
 export async function generateJWTToken(payload) {
     return new Promise((resolve, reject) => {
         readFile(config.jwt.private_key_path).then((privateKey) => {
-            jwt.sign(payload, privateKey, { algorithm: 'RS512', expiresIn: '30m' }, function (err, token) {
+            jwt.sign(payload, privateKey, { algorithm: 'RS512', expiresIn: '1m' }, function (err, token) {
                 if (err) reject(err);
                 resolve(token);
             });
         })
     })
 }
+
+export async function generateRefreshToken(): Promise<string> {
+    const { randomBytes } = await import('node:crypto');
+    return new Promise((resolve) => {
+        randomBytes(64, (err, buf) => {
+            resolve(buf.toString('hex'));
+        });
+    });
+}
+
